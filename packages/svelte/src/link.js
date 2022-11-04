@@ -22,7 +22,17 @@ export default (node, options = {}) => {
     if (shouldIntercept(event)) {
       event.preventDefault()
 
-      router.visit(node.href, options)
+      router.visit(node.href, {
+        onCancelToken: () => node.dispatchEvent(new CustomEvent('cancel-token', { bubbles: true })),
+        onBefore: (visit) => node.dispatchEvent(new CustomEvent('before', { bubbles: true, detail: { visit }})),
+        onStart: (visit) => node.dispatchEvent(new CustomEvent('start', { bubbles: true, detail: { visit }})),
+        onProgress: (progress) => node.dispatchEvent(new CustomEvent('progress', { bubbles: true, detail: { progress }})),
+        onFinish: (visit) => node.dispatchEvent(new CustomEvent('finish', { bubbles: true, detail: { visit }})),
+        onCancel: () => node.dispatchEvent(new CustomEvent('cancel', { bubbles: true })),
+        onSuccess: (page) => node.dispatchEvent(new CustomEvent('success', { bubbles: true, detail: { page }})),
+        onError: (errors) => node.dispatchEvent(new CustomEvent('error', { bubbles: true, detail: { errors }})),
+        ...options,
+      })
     }
   }
 
