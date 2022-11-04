@@ -5,6 +5,10 @@ export default (node, options = {}) => {
   node.href = href
   options.data = data
 
+  function fireEvent(name, eventOptions = {}) {
+    return node.dispatchEvent(new CustomEvent(name, { bubbles: true, ...eventOptions }))
+  }
+
   function hrefAndData(options) {
     return mergeDataIntoQueryString(
       options.method || 'get',
@@ -23,14 +27,14 @@ export default (node, options = {}) => {
       event.preventDefault()
 
       router.visit(node.href, {
-        onCancelToken: () => node.dispatchEvent(new CustomEvent('cancel-token', { bubbles: true })),
-        onBefore: (visit) => node.dispatchEvent(new CustomEvent('before', { bubbles: true, detail: { visit }})),
-        onStart: (visit) => node.dispatchEvent(new CustomEvent('start', { bubbles: true, detail: { visit }})),
-        onProgress: (progress) => node.dispatchEvent(new CustomEvent('progress', { bubbles: true, detail: { progress }})),
-        onFinish: (visit) => node.dispatchEvent(new CustomEvent('finish', { bubbles: true, detail: { visit }})),
-        onCancel: () => node.dispatchEvent(new CustomEvent('cancel', { bubbles: true })),
-        onSuccess: (page) => node.dispatchEvent(new CustomEvent('success', { bubbles: true, detail: { page }})),
-        onError: (errors) => node.dispatchEvent(new CustomEvent('error', { bubbles: true, detail: { errors }})),
+        onCancelToken: () => fireEvent('cancel-token'),
+        onBefore: (visit) => fireEvent('before', { detail: { visit }}),
+        onStart: (visit) => fireEvent('start', { detail: { visit }}),
+        onProgress: (progress) => fireEvent('progress', { detail: { progress }}),
+        onFinish: (visit) => fireEvent('finish', { detail: { visit }}),
+        onCancel: () => fireEvent('cancel'),
+        onSuccess: (page) => fireEvent('success', { detail: { page }}),
+        onError: (errors) => fireEvent('error', { detail: { errors }}),
         ...options,
       })
     }
