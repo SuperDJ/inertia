@@ -12,7 +12,7 @@ import { createElement, forwardRef, useCallback } from 'react'
 const noop = () => undefined
 
 interface BaseInertiaLinkProps {
-  as?: string
+  as?: [string, object]
   data?: Record<string, FormDataConvertible>
   href: string
   method?: Method

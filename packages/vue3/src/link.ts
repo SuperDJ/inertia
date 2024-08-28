@@ -2,7 +2,7 @@ import { mergeDataIntoQueryString, Method, PageProps, Progress, router, shouldIn
 import { defineComponent, DefineComponent, h, PropType } from 'vue'
 
 export interface InertiaLinkProps {
-  as?: string
+  as?: [string, object]
   data?: object
   href: string
   method?: Method
@@ -29,7 +29,7 @@ const Link: InertiaLink = defineComponent({
   name: 'Link',
   props: {
     as: {
-      type: String,
+      type: [String, Object],
       default: 'a',
     },
     data: {
@@ -75,7 +75,7 @@ const Link: InertiaLink = defineComponent({
   },
   setup(props, { slots, attrs }) {
     return () => {
-      const as = props.as.toLowerCase()
+      const as = typeof props.as === 'string' ?  props.as.toLowerCase() : props.as
       const method = props.method.toLowerCase() as Method
       const [href, data] = mergeDataIntoQueryString(method, props.href || '', props.data, props.queryStringArrayFormat)
 
@@ -89,7 +89,7 @@ const Link: InertiaLink = defineComponent({
         props.as,
         {
           ...attrs,
-          ...(as === 'a' ? { href } : {}),
+          ...(typeof as === 'string' && as === 'a' ? { href } : {}),
           onClick: (event) => {
             if (shouldIntercept(event)) {
               event.preventDefault()
